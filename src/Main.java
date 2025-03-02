@@ -17,6 +17,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Main extends JPanel {
+    // All of the initial variables
+
     private static final int SCREEN_WIDTH = 1280;
     private static final int SCREEN_HEIGHT = 720;
 
@@ -29,6 +31,7 @@ public class Main extends JPanel {
     private int fps = 0;
     private int frameCount = 0;
 
+    // This is for optimised run
     private static final int TARGET_FPS = 300;
     private static final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
 
@@ -40,8 +43,8 @@ public class Main extends JPanel {
     private int renderYOffset = 0;
 
     public Main() throws IOException {
-        p1 = new Red(40, 300);
-        Map.setName("polus");
+        p1 = new Red(40, 300); // Create a player 1
+        Map.setName("polus"); // Change the name for a different name (MUST MATCH THE NAME IN THE FILE)
         UI.create();
 
         this.setFocusable(true);
@@ -60,6 +63,7 @@ public class Main extends JPanel {
         });
     }
 
+    // Makes it so it adds a black outline to the sides if the window is maxed
     private void adjustViewport() {
         Dimension size = getSize();
         double aspectRatio = (double) SCREEN_WIDTH / SCREEN_HEIGHT;
@@ -78,6 +82,7 @@ public class Main extends JPanel {
         }
     }
 
+    // The main loop of hte game
     private void gameLoop() {
         try {
             moveP1();
@@ -99,6 +104,8 @@ public class Main extends JPanel {
         }
     }
 
+    // This is where everything on the screen is drawn
+    // Builds like layers
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -119,16 +126,18 @@ public class Main extends JPanel {
                           -p1.getWidth(), p1.getHeight(), this);
         }
 
+        UI.drawUI(p1.getHP(), p1.getKP(), true, g2d, p1.name);
+
         g2d.setColor(Color.RED);
         g2d.drawString("FPS: " + fps, 10, 10);
 
         g2d.dispose();
 
-        p1.drawProjectiles(g);
-
         g.dispose();
     }
 
+    // Assigns a key that once pressed will perform an action
+    // Make sure that the key is within range of the keys array. If it isn't, just add enough to accomodate
     private class Keyboard implements KeyListener {
         @Override
         public void keyTyped(KeyEvent e) {}
@@ -154,6 +163,7 @@ public class Main extends JPanel {
             }
         }
 
+        // Reset the keys so continuous movement doesn't occur
         @Override
         public void keyReleased(KeyEvent e) {
             switch (e.getKeyChar()) {
@@ -170,6 +180,7 @@ public class Main extends JPanel {
         }
     }
 
+    // Main function that makes the player functional
     public void moveP1() throws IOException {
         if (keys[0]) {
             p1.jump();
@@ -204,6 +215,7 @@ public class Main extends JPanel {
         resetAnimP1();
     }
 
+    // Resets once a key isn't being pressed
     public void resetAnimP1() {
         if (!keys[1] && !keys[2] && !keys[3] && !keys[4] && !keys[5] && !keys[6] && !keys[7] && !p1.jumping && !p1.isLocked) {
             p1.setAction("idle");
