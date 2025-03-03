@@ -18,5 +18,9 @@ There are plans in the future where Skeletal Games Engine will be transfered to 
 A Python version is already in development.
 
 ## Planned Future Updates
-* All of the code will be uploaded
-* Java compiler will be added along with it
+* A logo
+* Java compiler
+* Side-scrolling
+* Menu screen
+* Loading screens
+* Level customisation
