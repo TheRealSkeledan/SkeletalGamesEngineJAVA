@@ -21,6 +21,7 @@ A Python version is already in development.
 * A logo
 * Java compiler
 * Side-scrolling
+* Enemies
+* Level customisation
 * Menu screen
 * Loading screens
-* Level customisation
