@@ -11,7 +11,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.*;
 
-// Thank you ChatGPT
+// Unless you're sure you know what you are doing, I won't recommend changing this code
+// This helps load spritesheets with a XML as an animation
 public class AnimationLoader {
 
     public static Map<String, BufferedImage[]> loadAnimations(String characterName) {

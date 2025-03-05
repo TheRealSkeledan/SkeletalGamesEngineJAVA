@@ -22,7 +22,7 @@ public class Main extends JPanel {
     private static final int SCREEN_WIDTH = 1280;
     private static final int SCREEN_HEIGHT = 720;
 
-    private boolean[] keys = new boolean[16];
+    private boolean[] keys = new boolean[8]; // Add more to this if you want more keys
     private boolean p1isFacingRight = true;
 
     private Red p1;
@@ -44,7 +44,7 @@ public class Main extends JPanel {
 
     public Main() throws IOException {
         p1 = new Red(40, 300); // Create a player 1
-        Map.setName("polus"); // Change the name for a different name (MUST MATCH THE NAME IN THE FILE)
+        Map.setName("polus"); // Change the name for a different name (MUST MATCH THE IMAGE NAME)
         UI.create();
 
         this.setFocusable(true);
@@ -52,6 +52,7 @@ public class Main extends JPanel {
 
         setDoubleBuffered(true);
 
+        // This handles the Executor Service
         executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(this::gameLoop, 0, OPTIMAL_TIME, TimeUnit.NANOSECONDS);
 
@@ -105,7 +106,7 @@ public class Main extends JPanel {
     }
 
     // This is where everything on the screen is drawn
-    // Builds like layers
+    // Builds like layers from bottom to top
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -118,21 +119,20 @@ public class Main extends JPanel {
         g2d.translate(renderXOffset, renderYOffset);
         g2d.scale((double) renderWidth / SCREEN_WIDTH, (double) renderHeight / SCREEN_HEIGHT);
 
-        Map.drawStage(g2d);
+        Map.drawBackStage(g);
         if (p1isFacingRight) {
             g2d.drawImage(p1.getCurrentFrame(), p1.getX(), p1.getY(), this);
         } else {
             g2d.drawImage(p1.getCurrentFrame(), p1.getX() + p1.getWidth(), p1.getY(),
                           -p1.getWidth(), p1.getHeight(), this);
         }
-
+        Map.drawFrontStage(g);
         UI.drawUI(p1.getHP(), p1.getKP(), true, g2d, p1.name);
 
         g2d.setColor(Color.RED);
         g2d.drawString("FPS: " + fps, 10, 10);
 
         g2d.dispose();
-
         g.dispose();
     }
 
@@ -224,7 +224,7 @@ public class Main extends JPanel {
 
     public static void main(String[] args) throws IOException {
         javax.swing.SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("SSF");
+            JFrame frame = new JFrame("Skeletal Games Engine");
             frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             try {
