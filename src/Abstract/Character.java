@@ -4,7 +4,6 @@ package Abstract;
 
 import Engine.AnimationLoader;
 import Objects.Projectile;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -109,15 +108,24 @@ public abstract class Character {
         return currentFrame;
     }
 
-    public void move(int dx) {
-        if (x + dx >= -110 && x + dx <= 1390 - getWidth()) {
-            x += dx;
-            if(y == 300)
-                setAction("walk");
-            else
-                setAction("jump");
+    public void move(int dx, int dy, int bgWidth, int bgHeight) {
+        int newX = x + dx;
+        int newY = y + dy;
+
+        int maxX = bgWidth - getWidth();
+        int maxY = bgHeight - getHeight();
+
+        setAction("walk");
+
+        if (newX >= 0 && newX <= maxX) {
+            x = newX;
+        }
+
+        if (newY >= 0 && newY <= maxY) {
+            y = newY;
         }
     }
+
 
     public void defend() {
         setAction("block");
@@ -203,30 +211,5 @@ public abstract class Character {
 
     public int getKP() {
         return KP;
-    }
-
-    public void shootProjectile(String type, boolean isFacingRight) throws IOException {
-        Projectile projectile = createProjectile(type, isFacingRight);
-        if (projectile != null) {
-            projectiles.add(projectile);
-        }
-    }
-
-    protected Projectile createProjectile(String type, boolean isFacingRight) throws IOException {
-        int projectileSpeed = 15;
-        int damage = 20;
-        if (type.equals("heavy")) {
-            return new Projectile(x, y, projectileSpeed, isFacingRight, bulletSprite, damage);
-        }
-        return null;
-    }
-
-    public void updateProjectiles() {
-        projectiles.forEach(Projectile::updatePosition);
-        projectiles.removeIf(p -> p.isOffScreen(1280));
-    }
-
-    public void drawProjectiles(Graphics g) {
-        projectiles.forEach(p -> p.draw(g));
     }
 }

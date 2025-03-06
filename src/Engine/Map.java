@@ -45,19 +45,19 @@ public class Map {
         return background;
     }
 
-    public static void drawBackStage(Graphics g) {
-        g.drawImage(getBackground(), 0, 0, null);
+    public static void drawBackStage(Graphics g, int x, int y) {
+        g.drawImage(getBackground(), x, y, null);
     }
 
-    public static void drawFrontStage(Graphics g) {
-        g.drawImage(getForeground(), 0, 0, null);
+    public static void drawFrontStage(Graphics g, int x, int y) {
+        g.drawImage(getForeground(), x, y, null);
     }
 
     public static int getWidth() {
-        return foreground != null ? foreground.getWidth() : 0;
+        return background != null ? background.getWidth() : 0;
     }
 
     public static int getHeight() {
-        return foreground != null ? foreground.getHeight() : 0;
+        return background != null ? background.getHeight() : 0;
     }
 }

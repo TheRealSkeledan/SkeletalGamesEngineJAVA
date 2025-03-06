@@ -2,6 +2,7 @@
 
 import Characters.Red;
 import Engine.Map;
+import Engine.Rooms;
 import Engine.UI;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -42,10 +43,23 @@ public class Main extends JPanel {
     private int renderXOffset = 0;
     private int renderYOffset = 0;
 
+    private static int[][] sampleRooms = {
+        {1, 0, 1}, 
+        {0, 1, 0}, 
+        {1, 0, 1}
+    };
+
+    private int cameraX = 0;
+    private int cameraY = 0;
+
+    private static Rooms rooms;
+
     public Main() throws IOException {
         p1 = new Red(40, 300); // Create a player 1
-        Map.setName("polus"); // Change the name for a different name (MUST MATCH THE IMAGE NAME)
+        Map.setName("greenMap"); // Change the name for a different name (MUST MATCH THE IMAGE NAME)
         UI.create();
+
+        rooms = new Rooms(sampleRooms, "skeld");
 
         this.setFocusable(true);
         this.addKeyListener(new Keyboard());
@@ -89,7 +103,6 @@ public class Main extends JPanel {
             moveP1();
             p1.updatePosition();
             p1.updateAnimationFrame();
-            p1.updateProjectiles();
         
             repaint();
         
@@ -119,22 +132,29 @@ public class Main extends JPanel {
         g2d.translate(renderXOffset, renderYOffset);
         g2d.scale((double) renderWidth / SCREEN_WIDTH, (double) renderHeight / SCREEN_HEIGHT);
 
-        Map.drawBackStage(g);
+        // Draw background
+        Map.drawBackStage(g, 0 - cameraX, 0 - cameraY);
+
+        // Draw the player at their absolute position
         if (p1isFacingRight) {
-            g2d.drawImage(p1.getCurrentFrame(), p1.getX(), p1.getY(), this);
+            g2d.drawImage(p1.getCurrentFrame(), 40, 300, this);
         } else {
-            g2d.drawImage(p1.getCurrentFrame(), p1.getX() + p1.getWidth(), p1.getY(),
-                          -p1.getWidth(), p1.getHeight(), this);
+            g2d.drawImage(p1.getCurrentFrame(), (40 + p1.getWidth()), 300,
+                        -p1.getWidth(), p1.getHeight(), this);
         }
-        Map.drawFrontStage(g);
+
+        // Draw front stage and UI
+        Map.drawFrontStage(g, 0 - cameraX, 0 - cameraY);
         UI.drawUI(p1.getHP(), p1.getKP(), true, g2d, p1.name);
 
+        // FPS Counter
         g2d.setColor(Color.RED);
         g2d.drawString("FPS: " + fps, 10, 10);
 
         g2d.dispose();
         g.dispose();
     }
+
 
     // Assigns a key that once pressed will perform an action
     // Make sure that the key is within range of the keys array. If it isn't, just add enough to accomodate
@@ -151,7 +171,7 @@ public class Main extends JPanel {
                     keys[1] = true;
                     p1isFacingRight = false;
                 }
-                case 'e' -> keys[2] = true;
+                case 's' -> keys[2] = true;
                 case 'd' -> {
                     keys[3] = true;
                     p1isFacingRight = true;
@@ -182,37 +202,30 @@ public class Main extends JPanel {
 
     // Main function that makes the player functional
     public void moveP1() throws IOException {
-        if (keys[0]) {
-            p1.jump();
+        if(keys[0]) {
+            p1.move(0, -p1.speed, Map.getWidth(), Map.getHeight());
         }
-        if(!keys[2]) {
-            if (keys[1]) {
-                p1.move(-p1.speed);
-            }
-            
-            if (keys[3]) {
-                p1.move(p1.speed);
-            }
+        
+        if (keys[1]) {
+            p1.move(-p1.speed, 0, Map.getWidth(), Map.getHeight());
         }
+
         if (keys[2]) {
-            p1.defend();
+            p1.move(0, p1.speed, Map.getWidth(), Map.getHeight());
         }
-        if(keys[4]) {
-            p1.light();
+        
+        if (keys[3]) {
+            p1.move(p1.speed, 0, Map.getWidth(), Map.getHeight());
         }
-        if(keys[5]) {
-            p1.heavy();
-            p1.shootProjectile("heavy", p1isFacingRight);
-        }
+
         if(keys[6]) {
             p1.taunt();
         }
-        if(keys[7]) {
-            p1.finish();
-            p1.shootProjectile("final", p1isFacingRight);
-        }
 
         resetAnimP1();
+
+        cameraX = p1.getX() - (SCREEN_WIDTH / 2);
+        cameraY = p1.getY() - (SCREEN_HEIGHT / 2);
     }
 
     // Resets once a key isn't being pressed

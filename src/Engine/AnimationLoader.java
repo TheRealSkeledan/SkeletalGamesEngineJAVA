@@ -19,7 +19,7 @@ public class AnimationLoader {
         Map<String, BufferedImage[]> animations = new HashMap<>();
 
         try {
-            String basePath = "assets/images/characters/" + characterName + "/";
+            String basePath = "assets/images/characters/";
             File xmlFile = new File(basePath + characterName + ".xml");
             File spritesheetFile = new File(basePath + characterName + ".png");
 
