@@ -21,6 +21,7 @@ A Python version is already in development.
 
 ## Planned Future Updates
 * A logo
+* Change back from 2.5D to 2D
 * Java compiler
 * Side-scrolling
 * Enemies
