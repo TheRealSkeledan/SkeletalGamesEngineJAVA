@@ -2,7 +2,6 @@
 
 import Characters.Red;
 import Engine.Map;
-import Engine.Rooms;
 import Engine.UI;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,12 +17,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Main extends JPanel {
-    // All of the initial variables
-
     private static final int SCREEN_WIDTH = 1280;
     private static final int SCREEN_HEIGHT = 720;
 
-    private boolean[] keys = new boolean[8]; // Add more to this if you want more keys
+    private boolean[] keys = new boolean[16];
     private boolean p1isFacingRight = true;
 
     private Red p1;
@@ -32,7 +29,6 @@ public class Main extends JPanel {
     private int fps = 0;
     private int frameCount = 0;
 
-    // This is for optimised run
     private static final int TARGET_FPS = 300;
     private static final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
 
@@ -43,30 +39,16 @@ public class Main extends JPanel {
     private int renderXOffset = 0;
     private int renderYOffset = 0;
 
-    private static int[][] sampleRooms = {
-        {1, 0, 1}, 
-        {0, 1, 0}, 
-        {1, 0, 1}
-    };
-
-    private int cameraX = 0;
-    private int cameraY = 0;
-
-    private static Rooms rooms;
-
     public Main() throws IOException {
-        p1 = new Red(40, 300); // Create a player 1
-        Map.setName("greenMap"); // Change the name for a different name (MUST MATCH THE IMAGE NAME)
+        p1 = new Red(40, 300);
+        Map.setName("polus");
         UI.create();
-
-        rooms = new Rooms(sampleRooms, "skeld");
 
         this.setFocusable(true);
         this.addKeyListener(new Keyboard());
 
         setDoubleBuffered(true);
 
-        // This handles the Executor Service
         executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(this::gameLoop, 0, OPTIMAL_TIME, TimeUnit.NANOSECONDS);
 
@@ -78,7 +60,6 @@ public class Main extends JPanel {
         });
     }
 
-    // Makes it so it adds a black outline to the sides if the window is maxed
     private void adjustViewport() {
         Dimension size = getSize();
         double aspectRatio = (double) SCREEN_WIDTH / SCREEN_HEIGHT;
@@ -97,12 +78,12 @@ public class Main extends JPanel {
         }
     }
 
-    // The main loop of hte game
     private void gameLoop() {
         try {
             moveP1();
             p1.updatePosition();
             p1.updateAnimationFrame();
+            p1.updateProjectiles();
         
             repaint();
         
@@ -117,9 +98,9 @@ public class Main extends JPanel {
             e.printStackTrace();
         }
     }
+    
+    
 
-    // This is where everything on the screen is drawn
-    // Builds like layers from bottom to top
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -132,32 +113,28 @@ public class Main extends JPanel {
         g2d.translate(renderXOffset, renderYOffset);
         g2d.scale((double) renderWidth / SCREEN_WIDTH, (double) renderHeight / SCREEN_HEIGHT);
 
-        // Draw background
-        Map.drawBackStage(g, 0 - cameraX, 0 - cameraY);
-
-        // Draw the player at their absolute position
+        Map.drawBackStage(g2d, 0, 0);
         if (p1isFacingRight) {
-            g2d.drawImage(p1.getCurrentFrame(), 40, 300, this);
+            g2d.drawImage(p1.getCurrentFrame(), p1.getX(), p1.getY(), this);
         } else {
-            g2d.drawImage(p1.getCurrentFrame(), (40 + p1.getWidth()), 300,
-                        -p1.getWidth(), p1.getHeight(), this);
+            g2d.drawImage(p1.getCurrentFrame(), p1.getX() + p1.getWidth(), p1.getY(),
+                          -p1.getWidth(), p1.getHeight(), this);
         }
 
-        // Draw front stage and UI
-        Map.drawFrontStage(g, 0 - cameraX, 0 - cameraY);
+        Map.drawFrontStage(g2d, 0, 0);
+
         UI.drawUI(p1.getHP(), p1.getKP(), true, g2d, p1.name);
 
-        // FPS Counter
         g2d.setColor(Color.RED);
         g2d.drawString("FPS: " + fps, 10, 10);
 
         g2d.dispose();
+
+        p1.drawProjectiles(g);
+
         g.dispose();
     }
 
-
-    // Assigns a key that once pressed will perform an action
-    // Make sure that the key is within range of the keys array. If it isn't, just add enough to accomodate
     private class Keyboard implements KeyListener {
         @Override
         public void keyTyped(KeyEvent e) {}
@@ -171,7 +148,7 @@ public class Main extends JPanel {
                     keys[1] = true;
                     p1isFacingRight = false;
                 }
-                case 's' -> keys[2] = true;
+                case 'e' -> keys[2] = true;
                 case 'd' -> {
                     keys[3] = true;
                     p1isFacingRight = true;
@@ -183,7 +160,6 @@ public class Main extends JPanel {
             }
         }
 
-        // Reset the keys so continuous movement doesn't occur
         @Override
         public void keyReleased(KeyEvent e) {
             switch (e.getKeyChar()) {
@@ -200,35 +176,38 @@ public class Main extends JPanel {
         }
     }
 
-    // Main function that makes the player functional
     public void moveP1() throws IOException {
-        if(keys[0]) {
-            p1.move(0, -p1.speed, Map.getWidth(), Map.getHeight());
+        if (keys[0]) {
+            p1.jump();
         }
-        
-        if (keys[1]) {
-            p1.move(-p1.speed, 0, Map.getWidth(), Map.getHeight());
+        if(!keys[2]) {
+            if (keys[1]) {
+                p1.move(-p1.speed);
+            }
+            
+            if (keys[3]) {
+                p1.move(p1.speed);
+            }
         }
-
         if (keys[2]) {
-            p1.move(0, p1.speed, Map.getWidth(), Map.getHeight());
+            p1.defend();
         }
-        
-        if (keys[3]) {
-            p1.move(p1.speed, 0, Map.getWidth(), Map.getHeight());
+        if(keys[4]) {
+            p1.light();
         }
-
+        if(keys[5]) {
+            p1.heavy();
+        }
         if(keys[6]) {
             p1.taunt();
         }
+        if(keys[7]) {
+            p1.finish();
+        }
 
         resetAnimP1();
-
-        cameraX = p1.getX() - (SCREEN_WIDTH / 2);
-        cameraY = p1.getY() - (SCREEN_HEIGHT / 2);
     }
 
-    // Resets once a key isn't being pressed
     public void resetAnimP1() {
         if (!keys[1] && !keys[2] && !keys[3] && !keys[4] && !keys[5] && !keys[6] && !keys[7] && !p1.jumping && !p1.isLocked) {
             p1.setAction("idle");
@@ -237,7 +216,7 @@ public class Main extends JPanel {
 
     public static void main(String[] args) throws IOException {
         javax.swing.SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Skeletal Games Engine");
+            JFrame frame = new JFrame("SSF");
             frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             try {
