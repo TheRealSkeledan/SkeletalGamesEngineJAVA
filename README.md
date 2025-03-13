@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/7233d3a5-f525-41eb-a500-43e179701255)
+![New Drawing](https://github.com/user-attachments/assets/8b67b855-7c2a-4a9c-83c8-a26378017366)
 
 # Skeletal Games Engine (JAVA EDITION)
 The Java version of Skeletal Games Engine, designed to give a good start to people who want to make a Java-based game
