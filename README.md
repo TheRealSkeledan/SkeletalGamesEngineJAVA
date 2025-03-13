@@ -12,7 +12,7 @@ The Java version of Skeletal Games Engine, designed to give a good start to peop
 
 ## What games can I make?
 * You can make various 2D games, such as RPGs or fighter games
-* The base games currently is a basic fighting game
+* The base games currently is a basic RPG game
 
 ## Is Java the only language I can use?
 There are plans in the future where Skeletal Games Engine will be transfered to Haxe and C++.
