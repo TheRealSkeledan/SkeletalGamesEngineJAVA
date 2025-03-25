@@ -216,7 +216,7 @@ public class Main extends JPanel {
 
     public static void main(String[] args) throws IOException {
         javax.swing.SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("SSF");
+            JFrame frame = new JFrame("Skeletal Games Engine: JAVA");
             frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             try {
