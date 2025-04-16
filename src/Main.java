@@ -98,8 +98,6 @@ public class Main extends JPanel {
             e.printStackTrace();
         }
     }
-    
-    
 
     @Override
     protected void paintComponent(Graphics g) {
