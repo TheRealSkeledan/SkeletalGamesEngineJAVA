@@ -7,6 +7,6 @@ import java.io.IOException;
 
 public class Green extends Character {
     public Green(int x, int y) throws IOException {
-        super("Red", x, y, 6, 5, 2, 3, 0.3);
+        super("Green", x, y, 6, 5, 2, 3, 0.3);
     }
 }

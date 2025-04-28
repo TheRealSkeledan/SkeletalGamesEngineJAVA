@@ -10,14 +10,14 @@ import java.util.concurrent.*;
 import javax.swing.*;
 
 public class GamePanel extends JPanel {
-    private Character p1;
-    private boolean[] keys = new boolean[16];
+    private final Character p1;
+    private final boolean[] keys = new boolean[16];
     private boolean p1isFacingRight = true;
 
     private long lastTime = System.nanoTime();
     private int fps = 0;
     private int frameCount = 0;
-    private ScheduledExecutorService executorService;
+    private final ScheduledExecutorService executorService;
 
     private static final int SCREEN_WIDTH = 1280;
     private static final int SCREEN_HEIGHT = 720;
@@ -86,7 +86,7 @@ public class GamePanel extends JPanel {
                 lastTime = now;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
     }
 

@@ -7,41 +7,115 @@ import App.Main;
 import Characters.Green;
 import Characters.Red;
 import java.awt.*;
+import java.awt.event.*;
 import java.io.IOException;
 import javax.swing.*;
 
 public class CharacterSelectPanel extends JPanel {
-    private Main mainFrame;
+    private final Main mainFrame;
+    private final JLabel portraitLabel;
+    private final JButton confirmButton;
+    private final String[] characterNames = {"Red", "Green"};
+    private int currentIndex = 0;
+    private ImageIcon bgIcon, menuBG;
 
     public CharacterSelectPanel(Main mainFrame) {
         this.mainFrame = mainFrame;
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
+        setLayout(new BorderLayout());
 
-        JButton redButton = new JButton("Red");
-        JButton greenButton = new JButton("Green");
+        bgIcon = new ImageIcon(getClass().getResource("/assets/images/backgrounds/Menu/barThing.png"));
+        menuBG = new ImageIcon(getClass().getResource("/assets/images/backgrounds/Menu/menuBG.png"));
 
-        redButton.addActionListener(e -> selectCharacter("Red"));
-        greenButton.addActionListener(e -> selectCharacter("Green"));
+        portraitLabel = new JLabel();
+        portraitLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        portraitLabel.setVisible(false);
 
-        gbc.gridy = 0;
-        add(redButton, gbc);
+        confirmButton = new JButton("Confirm");
+        confirmButton.addActionListener(e -> confirmSelection());
+        confirmButton.setVisible(false);
 
-        gbc.gridy = 1;
-        add(greenButton, gbc);
+        JPanel rightPanel = new JPanel();
+        rightPanel.setOpaque(false);
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+
+        rightPanel.add(Box.createVerticalGlue());
+        rightPanel.add(portraitLabel);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        rightPanel.add(confirmButton);
+        rightPanel.add(Box.createVerticalGlue());
+
+        add(rightPanel, BorderLayout.CENTER);
+
+        setFocusable(true);
+        requestFocusInWindow();
+        addKeyListener(new Keyboard());
+
+        showPortrait(characterNames[currentIndex]);
     }
 
-    private void selectCharacter(String characterName) {
-        try {
-            Character selectedCharacter = null;
-            switch (characterName) {
-                case "Red" -> selectedCharacter = new Red(40, 300);
-                case "Green" -> selectedCharacter = new Green(40, 300);
-            }
-            
-            mainFrame.startGame(selectedCharacter);
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void navigateLeft() {
+        currentIndex--;
+        if (currentIndex < 0) {
+            currentIndex = characterNames.length - 1;
         }
+        showPortrait(characterNames[currentIndex]);
+    }
+
+    private void navigateRight() {
+        currentIndex++;
+        if (currentIndex >= characterNames.length) {
+            currentIndex = 0;
+        }
+        showPortrait(characterNames[currentIndex]);
+    }
+
+    private void showPortrait(String characterName) {
+        try {
+            String portraitPath = "/assets/images/characters/" + characterName.toLowerCase() + "Portrait.png";
+            ImageIcon portraitIcon = new ImageIcon(getClass().getResource(portraitPath));
+
+            portraitLabel.setIcon(portraitIcon);
+            portraitLabel.setVisible(true);
+            confirmButton.setVisible(true);
+            repaint();
+        } catch (Exception e) {
+            System.out.println("Error loading portrait: " + e.getMessage());
+        }
+    }
+
+    private void confirmSelection() {
+        try {
+            String selectedCharacterName = characterNames[currentIndex];
+            Character selected = switch (selectedCharacterName) {
+                case "Red" -> new Red(40, 300);
+                case "Green" -> new Green(40, 300);
+                default -> throw new IllegalStateException("Unexpected character: " + selectedCharacterName);
+            };
+            mainFrame.startGame(selected);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        g.drawImage(menuBG.getImage(), 0, 0, 1280, 720, this);
+        g.drawImage(bgIcon.getImage(), 0, 0, 1280, 720, this);
+    }
+
+    private class Keyboard implements KeyListener {
+        @Override
+        public void keyTyped(KeyEvent e) {}
+        @Override
+        public void keyPressed(KeyEvent e) {
+            switch (e.getKeyChar()) {
+                case 'a' -> navigateLeft();
+                case 'd' -> navigateRight();
+            }
+        }
+        @Override
+        public void keyReleased(KeyEvent e) {}
     }
 }
