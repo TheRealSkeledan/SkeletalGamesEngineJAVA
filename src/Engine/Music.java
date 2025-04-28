@@ -32,22 +32,18 @@ public class Music {
 		clip = AudioSystem.getClip();
 	}
 
-	// Plays continuously
 	public static void play() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        // open audioInputStream to the clip 
-        clip.open(audioInputStream); 
+        clip.open(audioInputStream);
           
         clip.loop(Clip.LOOP_CONTINUOUSLY);
 	}
 
-	// Plays it one time only, good for sound effects
 	public static void playSFX() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		clip.open(audioInputStream);
 
 		clip.start();
 	}
 
-	// Stops and plays the ending
 	public static void stop() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		clip.stop();
 
@@ -57,7 +53,6 @@ public class Music {
 		clip.start();
 	}
 
-	// Moves to the next movement
 	public static void next() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		clip.stop();
 
