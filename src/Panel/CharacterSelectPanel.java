@@ -112,7 +112,7 @@ public class CharacterSelectPanel extends JPanel {
             ImageIcon portraitIcon = new ImageIcon(scaledPortrait);
             portraitLabel.setIcon(portraitIcon);
     
-            int startX = 1000; 
+            int startX = 700; 
             int startY = 200;
             portraitLabel.setBounds(startX, startY, displayWidth, displayHeight);
     
